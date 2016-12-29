@@ -652,7 +652,7 @@ def mailboxAdd(domain=None, address=None, password=None,
     cur.execute(query, data)
     cur.execute("commit")
 
-    showMess('mailbox {} is now available')
+    showMess('mailbox {} is now available'.format(username))
 
 
 def mailboxPrint(domain=None):
