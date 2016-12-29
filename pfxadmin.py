@@ -3,24 +3,50 @@
 import psycopg2
 import datetime
 import locale
+import configparser
 from random import randint
 from passlib.hash import md5_crypt
 from colorama import init, Fore, Back, Style
 from tabulate import tabulate
 from passlib import pwd
 from cmd2 import Cmd  # , make_option, options
+from appdirs import *
 
-db_name = 'postfix'
-db_user = 'postfix'
-db_pass = 'postfix'
-db_host = 'localhost'
 
 tabfmt = "simple"  # keep it simple stupid
 locale.setlocale(locale.LC_ALL, locale.getlocale())  # set locale for datetime
 
 
+appname = "pfxadmin"
+appauthor = "peshane"
+
+conf_file = "{}/pfxadmin.ini".format(user_data_dir(appname, appauthor))
+
+# print(conf_file)
+# quit()
+
+
 # colorama initialization (mostly for windows)
 init()
+
+try:
+    config = configparser.ConfigParser()
+    config.read(conf_file)
+    if config['DATABASE']['name']:
+        pass
+except Exception as msg:
+    print("the following error occured:\n{}\n".format(msg))
+    print("Please create the {} file with the following skeleton:"
+          .format(conf_file))
+    print('[DATABASE]\nhost = db_host\nname = db_name\n' + \
+          'user = db_user\npassword = db_password')
+    quit(1)
+
+
+db_name = config['DATABASE']['name']
+db_user = config['DATABASE']['user']
+db_pass = config['DATABASE']['password']
+db_host = config['DATABASE']['host']
 
 
 #
@@ -309,7 +335,7 @@ def mailboxOptionUpdate(domain=None, args=None):
         confirm = ask("Do you confirm ? [y/N] ", "required")
         if confirm == "y" or confirm == "Y":
             mailboxUpdate(domain, address,
-                        password=True, new_password=new_password)
+                          password=True, new_password=new_password)
         else:
             showMess("you don't want this")
             return True

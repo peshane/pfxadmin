@@ -15,6 +15,7 @@ Required
   - colorama
   - tabulate
   - cmd2
+  - appdirs
 
 What you can/can't do with (for now)
 ------------------------------
@@ -106,7 +107,6 @@ ToDo
 - pfxadmin usability
   - pip installation would be great
   - auto creationg database schema or just add missing stuffs if already there
-  - using a config file
   - be more logical with commands calls
   - better english
 
