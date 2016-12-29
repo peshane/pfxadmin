@@ -17,6 +17,16 @@ Required
   - cmd2
   - appdirs
 
+### Creating database
+For PostgreSQL:
+  CREATE USER postfix WITH PASSWORD 'whatever';
+  CREATE DATABASE postfix OWNER postfix ENCODING 'unicode';
+
+then play the create_postfix_db.sql in the created database (eg: _postfix_ as suggested)
+
+then create at least one domain manualy:
+  INSERT INTO DOMAIN (domain, transport) VALUES ('domain.tld', 'virtual');
+
 What you can/can't do with (for now)
 ------------------------------
 - mailbox
