@@ -23,7 +23,7 @@ What you can/can't do with (for now)
   - adding/deleting
   - update comment, password, full name
   - can't
-    - enable/disable
+     - enable/disable
 - alias
   - list
   - adding/deleting
@@ -32,7 +32,7 @@ What you can/can't do with (for now)
 - domains
   - select the working domain at launch
   - can't
-    - do anything else
+     - do anything else
 
 And most important, you can't do a lot of things!
 
