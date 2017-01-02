@@ -3,6 +3,7 @@
 from psql import launchQuery
 from tools import printTabular, doesAddressExist, showMess
 import datetime
+import re
 
 
 class Alias(object):
@@ -19,7 +20,14 @@ class Alias(object):
         data = []
         for row in rows:
             a_name = row[0].split('@')[0]
-            a_dest = row[1].split('@')[0]
+            # a_dest = re.sub(',', '\n', row[1].split('@')[0])
+            a_dest = ""
+            l_dest = row[1].split(',')
+            for i in range(0, len(l_dest)):
+                a_dest += l_dest[i].split('@')[0]
+                if i < len(l_dest) - 1:
+                    a_dest += ', '
+            # print("{}: {}".format(a_name, a_dest))
             # a_domain = row[2]
             a_created = datetime.datetime.strftime(row[3], "%x %X")
             a_modified = datetime.datetime.strftime(row[4], "%x %X")
@@ -107,9 +115,9 @@ class Alias(object):
             showMess("target {} does not exist".format(goto), "warn")
             return False
         # check if alias exist
-        if doesAddressExist(address, "alias", cur=self.cur):
-            showMess("alias {} exist already".format(address), "warn")
-            return False
+        # if doesAddressExist(address, "alias", cur=self.cur):
+        #     showMess("alias {} exist already".format(address), "warn")
+        #     return False
         query = """insert into alias (address, goto, domain, comment)
                 values (%s, %s, %s, %s)"""
         data = (address, goto, domain, comment)
