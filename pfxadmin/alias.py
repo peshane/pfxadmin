@@ -40,7 +40,6 @@ class Alias(object):
                 data.append([a_name, a_dest, a_comment,
                              a_created, a_modified, a_active])
         printTabular(headers, data)
-
     def pre_toggle(self, domain=None, args=None):
         """enable or disable an alias"""
         if args[0] == "enable":
@@ -109,15 +108,29 @@ class Alias(object):
 
     def add(self, domain=None, address=None, goto=None, comment=None):
         address = "{}@{}".format(address, domain)
-        goto = "{}@{}".format(goto, domain)
+        raw_goto = goto
+        goto = ""
+        if len(raw_goto.split(',')) > 1:
+            l_goto = raw_goto.split(',')
+            # showMess(str(l_goto), 'debug')
+            for i in range(0, len(l_goto)):
+                if len(l_goto[i].split('@')) == 1:
+                    l_goto[i] = "{}@{}".format(l_goto[i], domain)
+                goto += l_goto[i]
+                if i < len(l_goto) - 1:
+                    goto += ','
+        else:
+            goto = "{}@{}".format(goto, domain)
+        # showMess(goto, 'debug')
+        # return True
         # check if goto exist
-        if not doesAddressExist(goto, "alias", cur=self.cur):
-            showMess("target {} does not exist".format(goto), "warn")
-            return False
-        # check if alias exist
-        # if doesAddressExist(address, "alias", cur=self.cur):
-        #     showMess("alias {} exist already".format(address), "warn")
+        # if not doesAddressExist(goto, "alias", cur=self.cur):
+        #     showMess("target {} does not exist".format(goto), "warn")
         #     return False
+        # check if alias exist
+        if doesAddressExist(address, "alias", cur=self.cur):
+            showMess("alias {} exist already".format(address), "warn")
+            return False
         query = """insert into alias (address, goto, domain, comment)
                 values (%s, %s, %s, %s)"""
         data = (address, goto, domain, comment)

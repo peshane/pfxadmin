@@ -80,7 +80,7 @@ class Shell(Cmd):
         """for alias stuffs
         you can:
             add     -- add an alias
-                       ex: alias add new_alias dest_mailbox [comment]
+                       ex: alias add new_alias dest_mailbox[,dest] [comment]
             disable -- disable an alias
                        ex: alias disable alias_name
             enable  -- enable an alias
