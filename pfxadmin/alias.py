@@ -3,7 +3,7 @@
 from psql import launchQuery
 from tools import printTabular, doesAddressExist, showMess
 import datetime
-import re
+# import re
 
 
 class Alias(object):
@@ -24,7 +24,10 @@ class Alias(object):
             a_dest = ""
             l_dest = row[1].split(',')
             for i in range(0, len(l_dest)):
-                a_dest += l_dest[i].split('@')[0]
+                if l_dest[i].split('@')[1] == self.domain:
+                    a_dest += l_dest[i].split('@')[0]
+                else:
+                    a_dest += l_dest[i]
                 if i < len(l_dest) - 1:
                     a_dest += ', '
             # print("{}: {}".format(a_name, a_dest))
@@ -37,8 +40,25 @@ class Alias(object):
             else:
                 a_comment = row[6]
             if row[0] != row[1]:
-                data.append([a_name, a_dest, a_comment,
-                             a_created, a_modified, a_active])
+                if len(a_dest.split(',')) > 1:
+                    a_dest = a_dest.split(',')
+                    data.append([a_name, a_dest[0], a_comment,
+                                 a_created, a_modified, a_active])
+                    a_name = "⁝"
+                    # a_name = "⎣"
+                    # a_name = "⎿"
+                    # a_name = "⌊"
+                    # a_name = "⸠"
+                    a_comment = ""
+                    a_created = ""
+                    a_modified = ""
+                    a_active = ""
+                    for i in range(1, len(a_dest)):
+                        data.append([a_name, a_dest[i], a_comment,
+                                     a_created, a_modified, a_active])
+                else:
+                    data.append([a_name, a_dest, a_comment,
+                                 a_created, a_modified, a_active])
         printTabular(headers, data)
     def pre_toggle(self, domain=None, args=None):
         """enable or disable an alias"""
@@ -120,7 +140,10 @@ class Alias(object):
                 if i < len(l_goto) - 1:
                     goto += ','
         else:
-            goto = "{}@{}".format(goto, domain)
+            if len(raw_goto.split('@')) == 1:
+                goto = "{}@{}".format(raw_goto, domain)
+            else:
+                goto = raw_goto
         # showMess(goto, 'debug')
         # return True
         # check if goto exist
@@ -202,16 +225,33 @@ class Alias(object):
             else:
                 return True
         elif target:
-            new_target = "{}@{}".format(kargs["new_target"], domain)
+            # new_target = "{}@{}".format(kargs["new_target"], domain)
+            raw_goto = kargs["new_target"]
+            new_target = ""
+            if len(raw_goto.split(',')) > 1:
+                l_goto = raw_goto.split(',')
+                # showMess(str(l_goto), 'debug')
+                for i in range(0, len(l_goto)):
+                    if len(l_goto[i].split('@')) == 1:
+                        l_goto[i] = "{}@{}".format(l_goto[i], domain)
+                    new_target += l_goto[i]
+                    if i < len(l_goto) - 1:
+                        new_target += ','
+            else:
+                if len(raw_goto.split('@')) == 1:
+                    new_target = "{}@{}".format(raw_goto, domain)
+                else:
+                    new_target = raw_goto
             # check if new target exist
-            if not doesAddressExist(new_target, "alias", cur=self.cur):
-                showMess("the new target {} do not exist".format(new_target),
-                         "warn")
-                return False
+            # if not doesAddressExist(new_target, "alias", cur=self.cur):
+            #     showMess("the new target {} do not exist".format(new_target),
+            #              "warn")
+            #     return False
             query = """update alias set (goto, modified)=(%s,%s)
                 where address=(%s)"""
             now = datetime.datetime.now()
-            data = (kargs["new_target"], now, address)
+            # data = (kargs["new_target"], now, address)
+            data = (new_target, now, address)
             try:
                 launchQuery(self.cur, query, data, commit=True)
                 showMess("{}'s target is updated".format(address))
